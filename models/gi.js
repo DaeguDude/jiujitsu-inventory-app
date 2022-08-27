@@ -15,9 +15,7 @@ const GiSchema = new Schema({
 });
 
 GiSchema.virtual("url").get(function () {
-  // here you need to return the...some url and id
-  // url + id
-  return "";
+  return `/catalog/gi/${this.id}`;
 });
 
 // Compiles a model and exports it

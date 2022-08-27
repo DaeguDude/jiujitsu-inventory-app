@@ -1,0 +1,24 @@
+extends layout 
+
+block content 
+
+  h1 Brand: #{brand.name}
+  p #{brand.description}
+
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Gis
+
+    d1
+      each gi in brand_gis
+        dt
+          a(href=gi.url) #{gi.name}
+        dd #{gi.description}
+
+      else
+        p This brand has no gis.
+  hr
+  p 
+    a(href=brand.url+'/delete') Delete brand
+  p
+    a(href=brand.url+'/update') Update brand

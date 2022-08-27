@@ -1,19 +1,17 @@
 const Gi = require("../models/gi");
-console.log(Gi);
+const Brand = require("../models/brand");
 const async = require("async");
 
 // Welcome page
-exports.index = (req, res) => {
-  // TODO: Mongoose unable to execute query.
-  // I mean it executes query... but somehow it returns nothing.
-  // - is my mongoose setup wrong?
-  // - am I using mongoose query wrong?
-  // - am I using async library wrong?
+exports.index = (req, res, next) => {
   async.parallel(
     {
-      gi_find(callback) {
+      gi_count(callback) {
         // Gi.findOne({ name: "expensive3" }, callback);
-        Gi.find({}, callback);
+        Gi.countDocuments({}).exec(callback);
+      },
+      brand_count(callback) {
+        Brand.countDocuments({}).exec(callback);
       },
     },
     function (err, results) {
@@ -25,6 +23,8 @@ exports.index = (req, res) => {
 
       res.render("index", {
         title: "Jiujitsu Gi Inventory Home",
+        error: err,
+        data: results,
       });
     }
   );

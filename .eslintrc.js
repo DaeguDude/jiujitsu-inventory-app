@@ -10,6 +10,6 @@ module.exports = {
     ecmaVersion: "latest",
   },
   rules: {
-    "no-unused-vars": "error",
+    "no-unused-vars": "warn",
   },
 };

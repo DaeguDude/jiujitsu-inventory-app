@@ -7,9 +7,7 @@ const BrandSchema = new Schema({
 });
 
 BrandSchema.virtual("url").get(function () {
-  // here you need to return the...some url and id
-  // url + id
-  return "";
+  return `/catalog/brand/${this.id}`;
 });
 
 module.exports = mongoose.model("Brand", BrandSchema);

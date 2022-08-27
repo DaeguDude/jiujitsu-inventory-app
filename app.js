@@ -10,13 +10,14 @@ const catalogRouter = require("./routes/catalog");
 
 const app = express();
 
-console.log(process.env.MONGODB_URI);
+console.log("process env mongodb URI", process.env.MONGODB_URI);
 
 function connectToMongoDB() {
   const mongoose = require("mongoose");
   mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    dbName: "jiujitsu-gi-inventory-app",
   });
   const db = mongoose.connection;
   db.on("error", console.error.bind(console, "MongoDB connection error:"));
