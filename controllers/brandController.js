@@ -1,6 +1,7 @@
 const Brand = require("../models/brand");
 const Gi = require("../models/gi");
 const async = require("async");
+const { body, validationResult } = require("express-validator");
 
 // GET request for one Brand
 exports.brand_list = (req, res, next) => {
@@ -50,31 +51,202 @@ exports.brand_detail = (req, res, next) => {
 };
 
 // GET request for creating Brand
-exports.brand_create_get = (req, res) => {
-  res.send(`NOT IMPLEMENTED: Brand create GET`);
+exports.brand_create_get = (req, res, next) => {
+  res.render("brand_form", { title: "Create Brand" });
 };
 
 // POST request for creating Brand
-exports.brand_create_post = (req, res) => {
-  res.send(`NOT IMPLEMENTED: Brand create POST`);
-};
+exports.brand_create_post = [
+  body("name")
+    .trim()
+    .isLength({ min: 2 })
+    .escape()
+    .withMessage("Brand name should be at least 2 characters.")
+    .isAlphanumeric()
+    .withMessage("Only alphanumeric value is allowed."),
+  body("description")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("You can't leave out the field")
+    .isLength({ max: 50 })
+    .withMessage("Max 50 characters")
+    .matches(/^[a-z0-9 ]+$/i)
+    .withMessage("Only alphanumeric value is allowed."),
+
+  // Process request after validation and sanitization
+  (req, res, next) => {
+    const errors = validationResult(req);
+    console.error("errors", errors);
+    if (!errors.isEmpty()) {
+      res.render("brand_form", {
+        title: "Create Brand",
+        errors: errors.array(),
+        brand: req.body,
+      });
+      return;
+    } else {
+      const brand = new Brand({
+        name: req.body.name,
+        description: req.body.description,
+      });
+
+      brand.save(function (err) {
+        if (err) {
+          return next(err);
+        }
+
+        res.redirect(brand.url);
+      });
+    }
+  },
+];
 
 // GET request to delete Brand
-exports.brand_delete_get = (req, res) => {
-  res.send(`NOT IMPLEMENTED: Brand delete GET`);
+exports.brand_delete_get = (req, res, next) => {
+  async.parallel(
+    {
+      brand(callback) {
+        Brand.findById(req.params.id).exec(callback);
+      },
+      brand_gis(callback) {
+        Gi.find({ brand: req.params.id }).exec(callback);
+      },
+    },
+    function (err, results) {
+      if (err) {
+        return next(err);
+      }
+
+      if (results.genre === null) {
+        res.redirect("/catalog/brands");
+        return;
+      }
+
+      res.render("brand_delete", {
+        title: "Delete Brand",
+        brand: results.brand,
+        brand_gis: results.brand_gis,
+      });
+    }
+  );
 };
 
 // POST request to delete Brand
-exports.brand_delete_post = (req, res) => {
-  res.send(`NOT IMPLEMENTED: Brand delete POST`);
+exports.brand_delete_post = (req, res, next) => {
+  async.parallel(
+    {
+      brand(callback) {
+        Brand.findById(req.params.id).exec(callback);
+      },
+      brand_gis(callback) {
+        Gi.find({ brand: req.params.id }).exec(callback);
+      },
+    },
+    function (err, results) {
+      if (err) {
+        return next(err);
+      }
+
+      if (results.brand_gis.length > 0) {
+        res.render("brand_delete", {
+          title: "Delete Brand",
+          brand: results.brand,
+          brand_gis: results.brand_gis,
+        });
+        return;
+      } else {
+        Brand.findByIdAndRemove(
+          req.body.brandid,
+          function deleteBrand(err, result) {
+            if (err) {
+              return next(err);
+            }
+
+            if (result === null) {
+              res.send("Brand not found");
+              return;
+            }
+
+            res.redirect("/catalog/brands");
+          }
+        );
+      }
+    }
+  );
 };
 
 // GET request to update Brand
-exports.brand_update_get = (req, res) => {
-  res.send(`NOT IMPLEMENTED: Brand update GET`);
+exports.brand_update_get = (req, res, next) => {
+  async.parallel(
+    {
+      brand(callback) {
+        Brand.findById(req.params.id).exec(callback);
+      },
+    },
+    function (err, results) {
+      if (err) {
+        return next(err);
+      }
+
+      if (results.brand === null) {
+        const err = new Error("Brand not found");
+        err.status = 404;
+        return next(err);
+      }
+
+      res.render("brand_form", {
+        title: "Update Brand",
+        brand: results.brand,
+      });
+    }
+  );
 };
 
 // POST request to update Brand
-exports.brand_update_post = (req, res) => {
-  res.send(`NOT IMPLEMENTED: Brand update POST`);
-};
+exports.brand_update_post = [
+  body("name")
+    .trim()
+    .isLength({ min: 2 })
+    .escape()
+    .withMessage("Brand name should be at least 2 characters.")
+    .isAlphanumeric()
+    .withMessage("Only alphanumeric value is allowed."),
+  body("description")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("You can't leave out the field")
+    .isLength({ max: 50 })
+    .withMessage("Max 50 characters")
+    .matches(/^[a-z0-9 ]+$/i)
+    .withMessage("Only alphanumeric value is allowed."),
+
+  // Process request after validation and sanitization
+  (req, res, next) => {
+    const errors = validationResult(req);
+    console.error("errors", errors);
+    if (!errors.isEmpty()) {
+      res.render("brand_form", {
+        title: "Update Brand",
+        errors: errors.array(),
+        brand: req.body,
+      });
+      return;
+    } else {
+      const brand = new Brand({
+        name: req.body.name,
+        description: req.body.description,
+        _id: req.params.id,
+      });
+
+      Brand.findByIdAndUpdate(req.params.id, brand, {}, function (err, brand) {
+        if (err) {
+          return next(err);
+        }
+
+        res.redirect(brand.url);
+      });
+    }
+  },
+];

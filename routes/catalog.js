@@ -39,7 +39,7 @@ router.get("/gis", gi_controller.gi_list);
 router.get("/brand/create", brand_controller.brand_create_get);
 
 // POST request for creating Brand
-router.get("/brand/create", brand_controller.brand_create_post);
+router.post("/brand/create", brand_controller.brand_create_post);
 
 // GET request to delete Brand
 router.get("/brand/:id/delete", brand_controller.brand_delete_get);

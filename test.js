@@ -4,13 +4,13 @@ async.parallel(
   {
     one: function (callback) {
       setTimeout(function () {
-        callback(null, "1");
-      }, 5000);
+        callback(new Error("Some error.."), "1");
+      }, 2000);
     },
     two: function (callback) {
       setTimeout(function () {
-        callback("there is an error!", 2);
-      }, 1000);
+        callback(null, 2);
+      }, 100);
     },
   },
   function (err, results) {

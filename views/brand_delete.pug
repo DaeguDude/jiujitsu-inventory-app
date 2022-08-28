@@ -1,0 +1,28 @@
+extends layout
+
+block content
+  h1 #{title}: #{brand.name}
+  
+
+  if brand_gis.length
+
+    p #[strong Delete the following Gis before attempting to delete this brand.]
+
+    div(style='margin-left:20px;margin-top:20px')
+
+      h4 Gis
+
+      dl
+      each gi in brand_gis
+        dt
+          a(href=gi.url) #{gi.name}
+        dd #{gi.description}
+
+  else
+    p Do you really want to delete this Gi?
+
+    form(method='POST' action='')
+      div.form-group
+        input#brandid.form-control(type='hidden',name='brandid', required='true', value=brand._id )
+
+      button.btn.btn-primary(type='submit') Delete
