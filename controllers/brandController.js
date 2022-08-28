@@ -137,13 +137,16 @@ exports.brand_delete_post = (req, res, next) => {
   async.parallel(
     {
       brand(callback) {
-        Brand.findById(req.params.id).exec(callback);
+        // Brand.findById(req.params.id).exec(callback);
+        Brand.findById(req.params.id, callback);
       },
       brand_gis(callback) {
-        Gi.find({ brand: req.params.id }).exec(callback);
+        Gi.find({ brand: req.params.id }, callback);
       },
     },
     function (err, results) {
+      console.log("my result", results);
+
       if (err) {
         return next(err);
       }
