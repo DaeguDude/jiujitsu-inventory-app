@@ -1,0 +1,61 @@
+
+
+extends layout
+
+block content
+  h1=title
+
+
+  form(method='POST' action='')
+    div.form-group
+      label(for='name') Name:
+      input.form-control(type='text' placeholder='Gi name' name='name' required='true' value=(brand ? brand.name : ""))
+
+    div.form-group
+      label(for='description') Description:
+      input.form-control(type='text' placeholder='Write a description about gi' name='name' required='true' value=(brand ? brand.name : ""))
+
+    //- Brand는 Select box로 처리하기
+    //- Brand list들도 서버에서 받아와야 함
+    div.form-group
+      label(for='brand') Brand:
+      input.form-control(type='text' placeholder='Brand name' name='name' required='true' value=(brand ? brand.name : ""))
+
+    //- Size는 Select box로 처리하기
+    //- Size는 서버에서 받아오는 건가?
+    div.form-group
+      //- label(for='size') Size:
+      //- select.form-control(type='select' placeholder='Select size' name='size' required='true' )
+      //-   - authors.sort(function(a, b) {let textA = a.family_name.toUpperCase(); let textB = b.family_name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+      //-   for author in authors
+      //-     if book
+      //-       //- Handle GET form, where book.author is an object, and POST form, where it is a string.
+      //-       option(
+      //-         value=author._id
+      //-         selected=(
+      //-           author._id.toString()==book.author._id
+      //-           || author._id.toString()==book.author
+      //-         ) ? 'selected' : false
+      //-       ) #{author.name}
+      //-     else
+      //-       option(value=author._id) #{author.name}
+
+
+    //- Price는 number type으로
+    div.form-group
+      label(for='price') Price:
+      input.form-control(type='number' placeholder='150,000' name='price' required='true' value=(brand ? brand.name : ""))
+
+    //- Number in stock도 number type으로
+    div.form-group
+      label(for='number-in-stock') Number in Stock:
+      input.form-control(type='number' placeholder='0' name='number-in-stock' required='true' value=(brand ? brand.name : ""))
+
+    
+      
+    button.btn.btn-primary(type='submit') Submit
+  if errors
+    ul
+      for error in errors
+        li!= error.msg
+

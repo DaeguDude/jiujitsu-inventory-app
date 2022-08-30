@@ -1,0 +1,24 @@
+extends layout
+
+block content
+
+  h1 ID: #{gi._id}
+
+  p #[strong Name:] #{gi.name}
+  p #[strong Description:] #{gi.description}
+
+  //- Here you need to make a link...?
+  p #[strong Brand:]
+    a(href=gi.brand.url) #{gi.brand.name}
+  p #[strong Size:] #{gi.size}
+  p #[strong Price:] #{gi.price}
+  p #[strong Number in Stock:] #{gi.number_in_stock}
+  
+
+
+  hr
+  p
+    a(href=gi.url+'/delete') Delete Gi
+  p
+    a(href=gi.url+'/update') Update Gi
+  

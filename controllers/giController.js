@@ -31,18 +31,45 @@ exports.index = (req, res, next) => {
 };
 
 // GET request for list of all Gi Items
-exports.gi_list = (req, res) => {
-  res.send("NOT IMPLEMENTED: Gi list");
+exports.gi_list = (req, res, next) => {
+  Gi.find({}, "name").exec(function (err, list_gis) {
+    if (err) {
+      return next(err);
+    }
+
+    res.render("gi_list", {
+      title: "Gi List",
+      gi_list: list_gis,
+    });
+  });
 };
 
 // GET request for one Gi
-exports.gi_detail = (req, res) => {
-  res.send(`NOT IMPLEMENTED: Gi Detail ${req.params.id}`);
+exports.gi_detail = (req, res, next) => {
+  Gi.findById(req.params.id)
+    .populate("brand")
+    .exec(function (err, gi) {
+      if (err) {
+        return next(err);
+      }
+      if (gi == null) {
+        var err = new Error("Gi found");
+        err.status = 404;
+        return next(err);
+      }
+
+      // gi.depopulate("brand");
+
+      res.render("gi_detail", {
+        title: "Gi: " + gi.name,
+        gi: gi,
+      });
+    });
 };
 
 // GET request for creating Gi
-exports.gi_create_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Gi create GET");
+exports.gi_create_get = (req, res, next) => {
+  res.render("gi_form", { title: "Create Gi" });
 };
 
 // POST request for creating Gi
