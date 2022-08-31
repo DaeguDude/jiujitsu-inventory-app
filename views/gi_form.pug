@@ -8,56 +8,59 @@ block content
   form(method='POST' action='')
     div.form-group
       label(for='name') Name:
-      input.form-control(type='text' placeholder='Gi name' name='name' required='true' value=(brand ? brand.name : ""))
+      input.form-control(type='text' placeholder='Gi name' name='name' required='true' value=(gi ? gi.name : ""))
 
     div.form-group
       label(for='description') Description:
-      input.form-control(type='text' placeholder='Write a description about gi' name='name' required='true' value=(brand ? brand.name : ""))
+      input.form-control(type='text' placeholder='Write a description about gi' name='description' required='true' value=(gi ? gi.description : ""))
 
     div.form-group
       label(for='brand') Brand:
       select#brand.form-control(type='select' placeholder='Select brand' name='brand' required='true' )
         //- - brand_list.sort(function(a, b) {let textA = a.family_name.toUpperCase(); let textB = b.family_name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
         for brand in brand_list
-          option(value=brand._id) #{brand.name}
-          //- if brand
-          //-   //- Handle GET form, where book.author is an object, and POST form, where it is a string.
-          //-   option(
-          //-     value=brand._id
-          //-     selected=(
-          //-       author._id.toString()==book.author._id
-          //-       || author._id.toString()==book.author
-          //-     ) ? 'selected' : false
-          //-   ) #{author.name}
-          //- else
+          if gi
+            //- Handle GET form, where book.author is an object, and POST form, where it is a string.
+            option(
+              value=brand._id
+              selected=(
+                brand._id.toString()==gi.brand._id
+                || brand._id.toString()==gi.brand
+              ) ? 'selected' : false
+            ) #{brand.name}
+          else
+            option(value=brand._id) #{brand.name}
     div.form-group
       div.form-group
       label(for='size') Size:
       select#size.form-control(type='select' placeholder='Select size' name='size' required='true')
-        option(value='A0') A0
-        option(value='A1') A1
-        option(value='A2') A2
-        option(value='A3') A3
-        option(value='A4') A4
-        option(value='A5') A5
-        option(value='A6') A6
-        //- option(value='A0' selected=(gi.size=="A0" ? 'selected' : false)) A0
-        //- option(value='A1' selected=(gi.size=="A1" ? 'selected' : false)) A1
-        //- option(value='A2' selected=(gi.size=="A2" ? 'selected' : false)) A2
-        //- option(value='A3' selected=(gi.size=="A3" ? 'selected' : false)) A3
-        //- option(value='A4' selected=(gi.size=="A4" ? 'selected' : false)) A4
-        //- option(value='A5' selected=(gi.size=="A5" ? 'selected' : false)) A5
-        //- option(value='A6' selected=(gi.size=="A6" ? 'selected' : false)) A6
+        if gi 
+          option(value='A0' selected=(gi.size=="A0" ? 'selected' : false)) A0
+          option(value='A1' selected=(gi.size=="A1" ? 'selected' : false)) A1
+          option(value='A2' selected=(gi.size=="A2" ? 'selected' : false)) A2
+          option(value='A3' selected=(gi.size=="A3" ? 'selected' : false)) A3
+          option(value='A4' selected=(gi.size=="A4" ? 'selected' : false)) A4
+          option(value='A5' selected=(gi.size=="A5" ? 'selected' : false)) A5
+          option(value='A6' selected=(gi.size=="A6" ? 'selected' : false)) A6
+        else
+          option(value='A0') A0
+          option(value='A1') A1
+          option(value='A2') A2
+          option(value='A3') A3
+          option(value='A4') A4
+          option(value='A5') A5
+          option(value='A6') A6
+        
 
     //- Price는 number type으로
     div.form-group
       label(for='price') Price:
-      input.form-control(type='number' placeholder='150,000' name='price' required='true' value=(brand ? brand.name : ""))
+      input.form-control(type='number' placeholder='150,000' name='price' required='true' value=(gi ? gi.price : ""))
 
     //- Number in stock도 number type으로
     div.form-group
-      label(for='number-in-stock') Number in Stock:
-      input.form-control(type='number' placeholder='0' name='number-in-stock' required='true' value=(brand ? brand.name : ""))
+      label(for='number_in_stock') Number in Stock:
+      input.form-control(type='number' placeholder='0' name='number_in_stock' required='true' value=(gi ? gi.number_in_stock : ""))
 
     
       

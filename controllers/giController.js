@@ -117,15 +117,17 @@ exports.gi_create_post = [
     .withMessage("price must be specified")
     .isNumeric()
     .withMessage("Only numeric value is allowed for price")
-    .isInt({ min: 0 }),
-  body("number-in-stock")
+    .isInt({ min: -1 })
+    .withMessage("Price shouldn't be below than 0"),
+  body("number_in_stock")
     .trim()
     .escape()
     .isLength({ min: 1 })
     .withMessage("price must be specified")
     .isNumeric()
     .withMessage("Only numeric value is allowed for price")
-    .isInt({ min: 0 }),
+    .isInt({ min: -1 })
+    .withMessage("Number in stock shouldn't be below than 0"),
 
   // Process after validation and sanitization is done
   (req, res, next) => {
@@ -149,15 +151,24 @@ exports.gi_create_post = [
           return next(err);
         }
 
-        // I think there should be some additional information
+        // NOTE: Here, you need to pass the information that user has filled out
         res.render("gi_form", {
           title: "Create Gi",
           brand_list: brands,
           errors: errors.array(),
+          gi: gi,
         });
       });
     } else {
-      // else save to the db and redirect to new gi detail
+      // Gi data is valid
+      gi.save(function (err) {
+        if (err) {
+          return next(err);
+        }
+
+        // Successful - redirect to the gi record
+        res.redirect(gi.url);
+      });
     }
   },
 ];
