@@ -69,7 +69,22 @@ exports.gi_detail = (req, res, next) => {
 
 // GET request for creating Gi
 exports.gi_create_get = (req, res, next) => {
-  res.render("gi_form", { title: "Create Gi" });
+  Brand.find({}).exec(function (err, brands) {
+    if (err) {
+      return next(err);
+    }
+
+    if (brands === null) {
+      const err = new Error("Brand not found");
+      err.status = 404;
+      return next(err);
+    }
+
+    res.render("gi_form", { title: "Create Gi", brand_list: brands });
+  });
+
+  // Brand list들을 불러와야 함....
+  // Size는 서버에서 받아올 수 있는지? - X
 };
 
 // POST request for creating Gi
