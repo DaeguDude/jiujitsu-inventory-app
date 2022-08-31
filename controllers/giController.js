@@ -1,6 +1,7 @@
 const Gi = require("../models/gi");
 const Brand = require("../models/brand");
 const async = require("async");
+const { body, validationResult } = require("express-validator");
 
 // Welcome page
 exports.index = (req, res, next) => {
@@ -69,7 +70,7 @@ exports.gi_detail = (req, res, next) => {
 
 // GET request for creating Gi
 exports.gi_create_get = (req, res, next) => {
-  Brand.find({}).exec(function (err, brands) {
+  Brand.find({}, "name").exec(function (err, brands) {
     if (err) {
       return next(err);
     }
@@ -82,15 +83,85 @@ exports.gi_create_get = (req, res, next) => {
 
     res.render("gi_form", { title: "Create Gi", brand_list: brands });
   });
-
-  // Brand list들을 불러와야 함....
-  // Size는 서버에서 받아올 수 있는지? - X
 };
 
 // POST request for creating Gi
-exports.gi_create_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: Gi create POST");
-};
+exports.gi_create_post = [
+  body("name")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("Name must be specified")
+    .isLength({ max: 30 })
+    .withMessage("Max 30 characters")
+    .matches(/^[a-z0-9 ]+$/i)
+    .withMessage("Only alphanumeric value is allowed for Name"),
+  body("description")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("Description must be specified")
+    .isLength({ max: 50 })
+    .withMessage("Max 50 characters")
+    .matches(/^[a-z0-9 ]+$/i)
+    .withMessage("Only alphanumeric value is allowed for Description"),
+  body("brand", "Brand must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("size", "Size must not be empty.").trim().isLength({ min: 1 }).escape(),
+  body("price")
+    .trim()
+    .escape()
+    .isLength({ min: 1 })
+    .withMessage("price must be specified")
+    .isNumeric()
+    .withMessage("Only numeric value is allowed for price")
+    .isInt({ min: 0 }),
+  body("number-in-stock")
+    .trim()
+    .escape()
+    .isLength({ min: 1 })
+    .withMessage("price must be specified")
+    .isNumeric()
+    .withMessage("Only numeric value is allowed for price")
+    .isInt({ min: 0 }),
+
+  // Process after validation and sanitization is done
+  (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create a Gi object with escaped and trimmed data.
+    const gi = new Gi({
+      name: req.body.name,
+      description: req.body.description,
+      brand: req.body.brand,
+      size: req.body.size,
+      price: req.body.price,
+      number_in_stock: req.body.number_in_stock,
+    });
+
+    // If error is not empty, there are errors, render form again with sanitized values and errors
+    if (!errors.isEmpty()) {
+      Brand.find({}, "name").exec(function (err, brands) {
+        if (err) {
+          return next(err);
+        }
+
+        // I think there should be some additional information
+        res.render("gi_form", {
+          title: "Create Gi",
+          brand_list: brands,
+          errors: errors.array(),
+        });
+      });
+    } else {
+      // else save to the db and redirect to new gi detail
+    }
+  },
+];
+// Gi name...
 
 // GET request to delete Gi
 exports.gi_delete_get = (req, res) => {
