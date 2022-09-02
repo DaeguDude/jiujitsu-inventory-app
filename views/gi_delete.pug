@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1 #{title}: #{gi.name}
+  p= "gi"
+
+  p Do you really want to delete this Gi?
+
+  form(method='POST' action='')
+    div.form-group
+      input#giid.form-control(type='hidden',name='giid', required='true', value=gi._id )
+
+    button.btn.btn-primary(type='submit') Delete

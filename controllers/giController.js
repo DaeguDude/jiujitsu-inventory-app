@@ -117,7 +117,7 @@ exports.gi_create_post = [
     .withMessage("price must be specified")
     .isNumeric()
     .withMessage("Only numeric value is allowed for price")
-    .isInt({ min: -1 })
+    .isInt({ min: 0 })
     .withMessage("Price shouldn't be below than 0"),
   body("number_in_stock")
     .trim()
@@ -126,7 +126,7 @@ exports.gi_create_post = [
     .withMessage("price must be specified")
     .isNumeric()
     .withMessage("Only numeric value is allowed for price")
-    .isInt({ min: -1 })
+    .isInt({ min: 0 })
     .withMessage("Number in stock shouldn't be below than 0"),
 
   // Process after validation and sanitization is done
@@ -175,8 +175,31 @@ exports.gi_create_post = [
 // Gi name...
 
 // GET request to delete Gi
-exports.gi_delete_get = (req, res) => {
-  res.send("NOT IMPLEMENTED: Gi delete GET");
+exports.gi_delete_get = (req, res, next) => {
+  // To delete a gi...You just might need a name of
+  // the gi.
+  async.parallel(
+    {
+      gi(callback) {
+        Gi.findById(req.params.id).exec(callback);
+      },
+    },
+    function (err, results) {
+      if (err) {
+        return next(err);
+      }
+
+      if (results.gi === null) {
+        res.redirect("/catalog/gis");
+        return;
+      }
+
+      res.render("gi_delete", {
+        title: "Delete Gi",
+        gi: results.gi,
+      });
+    }
+  );
 };
 
 // POST request to delete Gi
