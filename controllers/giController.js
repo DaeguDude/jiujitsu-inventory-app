@@ -176,8 +176,6 @@ exports.gi_create_post = [
 
 // GET request to delete Gi
 exports.gi_delete_get = (req, res, next) => {
-  // To delete a gi...You just might need a name of
-  // the gi.
   async.parallel(
     {
       gi(callback) {
@@ -203,8 +201,27 @@ exports.gi_delete_get = (req, res, next) => {
 };
 
 // POST request to delete Gi
-exports.gi_delete_post = (req, res) => {
-  res.send("NOT IMPLEMENTED: Gi delete POST");
+exports.gi_delete_post = (req, res, next) => {
+  console.log(req.body);
+  async.parallel(
+    {
+      gi(callback) {
+        Gi.findById(req.body.giid).exec(callback);
+      },
+    },
+    function (err, results) {
+      if (err) {
+        return next(err);
+      }
+
+      Gi.findByIdAndRemove(req.body.giid, function deleteGi(err) {
+        if (err) {
+          return next(err);
+        }
+        res.redirect("/catalog/gis");
+      });
+    }
+  );
 };
 
 // GET request to update Gi
