@@ -12,6 +12,7 @@ const GiSchema = new Schema({
   },
   price: { type: Number, required: true },
   number_in_stock: { type: Number, required: true },
+  photo_url: { type: String },
 });
 
 GiSchema.virtual("url").get(function () {

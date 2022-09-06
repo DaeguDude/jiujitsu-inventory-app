@@ -2,6 +2,8 @@ const Brand = require("../models/brand");
 const Gi = require("../models/gi");
 const async = require("async");
 const { body, validationResult } = require("express-validator");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
 // GET request for one Brand
 exports.brand_list = (req, res, next) => {
@@ -41,6 +43,8 @@ exports.brand_detail = (req, res, next) => {
         return next(err);
       }
 
+      console.log("brand", results.brand);
+
       res.render("brand_detail", {
         title: "Brand Detail",
         brand: results.brand,
@@ -55,8 +59,13 @@ exports.brand_create_get = (req, res, next) => {
   res.render("brand_form", { title: "Create Brand" });
 };
 
+// TODO: I need to create a url for the brand model.
+// And when creating a brand, save that photo url into the Mongodb Document.
+// And using that url you can read the photo.
+
 // POST request for creating Brand
 exports.brand_create_post = [
+  upload.single("photo"),
   body("name")
     .trim()
     .isLength({ min: 2 })
@@ -73,7 +82,6 @@ exports.brand_create_post = [
     .withMessage("Max 50 characters")
     .matches(/^[a-z0-9 ]+$/i)
     .withMessage("Only alphanumeric value is allowed."),
-
   // Process request after validation and sanitization
   (req, res, next) => {
     const errors = validationResult(req);
@@ -89,6 +97,7 @@ exports.brand_create_post = [
       const brand = new Brand({
         name: req.body.name,
         description: req.body.description,
+        photo_url: req.file.path,
       });
 
       brand.save(function (err) {

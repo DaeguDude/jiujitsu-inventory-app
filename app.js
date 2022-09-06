@@ -32,7 +32,14 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+// Express looks up the files in the order which I set the static directories
 app.use(express.static(path.join(__dirname, "public")));
+
+// So what I need to do is....
+// make that folder where images are saved accessible to be used in `img` tag.
+// A good solution would be `express.static`
+app.use("/uploads/", express.static(path.join(__dirname, "uploads")));
 
 app.use("/", indexRouter);
 app.use("/catalog", catalogRouter); // Add catalog routes to middleware chain

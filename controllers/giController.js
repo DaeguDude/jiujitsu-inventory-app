@@ -2,6 +2,8 @@ const Gi = require("../models/gi");
 const Brand = require("../models/brand");
 const async = require("async");
 const { body, validationResult } = require("express-validator");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
 // Welcome page
 exports.index = (req, res, next) => {
@@ -87,6 +89,7 @@ exports.gi_create_get = (req, res, next) => {
 
 // POST request for creating Gi
 exports.gi_create_post = [
+  upload.single("photo"),
   body("name")
     .trim()
     .isLength({ min: 1 })
@@ -134,6 +137,8 @@ exports.gi_create_post = [
     // Extract the validation errors from a request.
     const errors = validationResult(req);
 
+    console.log("req.file.path", req.file);
+
     // Create a Gi object with escaped and trimmed data.
     const gi = new Gi({
       name: req.body.name,
@@ -142,6 +147,7 @@ exports.gi_create_post = [
       size: req.body.size,
       price: req.body.price,
       number_in_stock: req.body.number_in_stock,
+      photo_url: req.file.path,
     });
 
     // If error is not empty, there are errors, render form again with sanitized values and errors
@@ -312,16 +318,15 @@ exports.gi_update_post = [
       size: req.body.size,
       price: req.body.price,
       number_in_stock: req.body.number_in_stock,
+      photo_url: req.file.path,
     });
 
-    // if errors - re-render the update view with errors
     if (!errors.isEmpty()) {
       Brand.find({}, "name").exec(function (err, brands) {
         if (err) {
           return next(err);
         }
 
-        // NOTE: Here, you need to pass the information that user has filled out
         res.render("gi_form", {
           title: "Update Gi",
           brand_list: brands,

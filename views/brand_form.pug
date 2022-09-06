@@ -3,14 +3,20 @@ extends layout
 block content
   h1=title
 
-  form(method='POST' action='')
+  //- NOTE: I haven't setup an action. Does this will cause an problem?
+  //- https://codedec.com/tutorials/image-uploading-to-mongodb-in-nodejs/
+  form(method='POST' action='' enctype="multipart/form-data")
     div.form-group
       label(for='name') Name:
       input.form-control(type='text' placeholder='Brand name' name='name' required='true' value=(brand ? brand.name : ""))
       label(for='description') Description:
       input.form-control(type='text' placeholder='Brand Description' name='description' required='true' value=(brand ? brand.description : ""))
+      label(for='photo') Description:
+      input.form-control(type='file' placeholder='Brand Photo' name='photo' required='true' value=(brand ? `/${brand.photo_url}` : ""))
     button.btn.btn-primary(type='submit') Submit
   if errors
     ul
       for error in errors
         li!= error.msg
+
+

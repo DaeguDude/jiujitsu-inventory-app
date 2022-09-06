@@ -4,6 +4,9 @@ block content
 
   h1 ID: #{gi._id}
 
+  if !!gi.photo_url
+    img(src=`/${gi.photo_url}` style={width: '150px', height: '150px'}) 
+
   p #[strong Name:] #{gi.name}
   p #[strong Description:] #{gi.description}
 

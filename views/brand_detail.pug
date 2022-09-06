@@ -3,6 +3,7 @@ extends layout
 block content 
 
   h1 Brand: #{brand.name}
+  img(src=`/${brand.photo_url}` style={width: '150px', height: '50px'}) 
   p #{brand.description}
 
   div(style='margin-left:20px;margin-top:20px')
